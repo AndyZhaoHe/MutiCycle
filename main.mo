@@ -29,7 +29,6 @@ actor class() = self {
   };
 
   public shared (msg) func propose(ptype: ProposalType, canister_id: ?Canister, wasm_code: ?Blob) : async Proposal {
-    // caller should be one of the owners
     assert(owner_check(msg.caller));
 
     if (ptype == #installCode) {
@@ -64,7 +63,7 @@ actor class() = self {
   };
 
   public shared (msg) func approve(id: ID) : async Proposal {
-    // caller should be one of the owners
+
     assert(owner_check(msg.caller));
 
     assert(id + 1 <= proposals.size());
@@ -77,7 +76,7 @@ actor class() = self {
 
     proposal := Types.add_approver(proposal, msg.caller);
 
-    if (proposal.approvers.size() == M) { // meet the threashhold and do the operation
+    if (proposal.approvers.size() == M) { 
       let ic : IC.Self = actor("aaaaa-aa");
 
       switch (proposal.ptype) {
@@ -124,10 +123,10 @@ actor class() = self {
             canister_id = Option.unwrap(proposal.canister_id);
           });
         };
-      }; // switch
+      }; 
 
       proposal := Types.finish_proposer(proposal);
-    }; // if (proposal.approvers.size() == M)
+    }; 
 
     Debug.print(debug_show(msg.caller, "APPROVED", proposal.ptype, "Proposal ID", proposal.id, "Executed", proposal.finished));
     Debug.print(debug_show());
